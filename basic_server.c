@@ -20,14 +20,17 @@ int main() {
   while(1) {
     from_client = server_handshake( &to_client );
 
-    while(read(from_client, msg, BUFFER_SIZE)) {
-      printf("Server received: %s\n", msg);
-      for(i = 0; i < strlen(msg); i++) {
-        msg[i] += 1;
+    if(from_client) {
+      while(read(from_client, msg, BUFFER_SIZE)) {
+        printf("Server received: %s\n", msg);
+        for(i = 0; i < strlen(msg); i++) {
+          msg[i] += 1;
+        }
+        write(to_client, msg, BUFFER_SIZE);
+        printf("Server sent: %s\n", msg);
       }
-      write(to_client, msg, BUFFER_SIZE);
-      printf("Server sent: %s\n", msg);
+      printf("Client disconnected. Time for a new handshake!\n");
     }
-    printf("Client disconnected. Time for a new handshake!\n");
   }
+  return 0;
 }

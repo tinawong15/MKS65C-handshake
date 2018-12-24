@@ -24,18 +24,27 @@ int server_handshake(int *to_client) {
   read(fd, message, sizeof(message));
   printf("Message from the Client: %s\n", message);
 
-  printf("Write back to Client...\n");
-  *to_client = open(message, O_WRONLY);
-  remove("server");
-  write(*to_client, ACK, sizeof(ACK));
+  int f = fork();
+  // parent
+  if(f == 0) {
+    printf("Remove well known pipe...\n");
+    remove("server");
+  }
+  // child server
+  else {
+    printf("Write back to Client...\n");
+    *to_client = open(message, O_WRONLY);
+    write(*to_client, ACK, sizeof(ACK));
 
-  printf("Wait for Client...\n");
-  printf("Private pipe opened: %d\n", fd);
-  char response[HANDSHAKE_BUFFER_SIZE];
-  read(fd, response, sizeof(response));
-  printf("Response from the Client: %s\n", response);
+    printf("Wait for Client...\n");
+    printf("Private pipe opened: %d\n", fd);
+    char response[HANDSHAKE_BUFFER_SIZE];
+    read(fd, response, sizeof(response));
+    printf("Response from the Client: %s\n", response);
 
-  return fd;
+    return fd;
+  }
+  return 0;
 }
 
 

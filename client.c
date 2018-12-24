@@ -26,4 +26,5 @@ int main() {
     read(from_server, msg, BUFFER_SIZE);
     printf("Client received: %s\n", msg);
   }
+  return 0;
 }
